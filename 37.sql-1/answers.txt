@@ -1,0 +1,15 @@
+1.SELECT salary FROM emp WHERE Emp_Id = 273407;
+2.SELECT First_Name FROM emp WHERE city = "Palo Alto" AND gender = "F"
+3.SELECT * FROM emp WHERE Years_in_Company >= all (SELECT Years_in_Company FROM emp)
+4.SELECT First_Name, Last_Name, Age_in_Years, City, County FROM emp  WHERE First_Name = "Jack"
+5.SELECT * FROM emp WHERE gender = "F" AND Age_in_Years > 55 AND First_Name LIKE "J%" AND E_Mail LIKE "%@gmail.com"
+6.SELECT First_Name, Last_Name, Age_in_Years, City, County FROM emp WHERE gender = "M" AND Age_in_Years > 50 AND First_Name LIKE "J%" AND state = "IL"
+7.SELECT First_Name, Last_Name, salary, City, County FROM emp WHERE Age_in_Years > 50 AND Fathers_Name LIKE "%j%" AND state = "NY" AND salary > 100000
+8.SELECT First_Name, Last_Name, gender, Age_in_Years, salary, city, County FROM emp WHERE gender = "F" AND Last_Name LIKE "B%" AND Age_in_Years NOT BETWEEN 30 AND 50 AND state = "NY" AND salary > 80000
+9. did not understand!
+10. did not understand!
+11. did not understand!
+12.SELECT First_Name, age_in_years, Last_Name, CASE WHEN Age_in_Years > 50 THEN "old" WHEN Age_in_Years BETWEEN 30 AND 50 THEN "adult" ELSE "young" END AS "status" from emp
+13.SELECT First_Name, Name_Prefix, Years_in_Company, Last_Name, CASE WHEN Years_in_Company < 5 THEN "junior" WHEN Years_in_Company BETWEEN 5 AND 15 THEN "senior" WHEN Name_Prefix LIKE "dr%" THEN "doctor" ELSE "expert" END AS "knowledge" from emp
+14.SELECT * from emp ORDER BY First_Name, Last_Name
+15.SELECT * from emp ORDER BY Weight_in_Kgs, Age_in_Years DESC
