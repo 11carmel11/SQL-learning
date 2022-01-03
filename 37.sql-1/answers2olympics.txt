@@ -1,0 +1,67 @@
+1.[
+    WITH first_win AS (SELECT athlete, MIN(year) AS first_win FROM summer GROUP BY Athlete)
+
+    SELECT s.*, f.first_win FROM summer s JOIN first_win f ON f.athlete=s.athlete
+]
+2.WITH all_ AS (
+SELECT *
+FROM summer
+UNION
+SELECT *
+FROM winter
+)
+
+SELECT athlete, GROUP_CONCAT(DISTINCT Discipline) Disciplines
+FROM all_ 
+GROUP BY athlete
+HAVING COUNT(DISTINCT Discipline) > 1
+3.WITH all_ AS (
+SELECT *
+FROM summer
+UNION
+SELECT *
+FROM winter
+)
+
+SELECT a.athlete, GROUP_CONCAT(DISTINCT d.Country) Countries
+FROM all_ a JOIN dictionary d
+ON a.Country = d.Code
+GROUP BY athlete
+HAVING COUNT(DISTINCT a.Country) > 1
+4.WITH all_ AS (
+SELECT *
+FROM summer
+UNION
+SELECT *
+FROM winter
+),
+medals_count AS (
+SELECT country, COUNT(medal) AS medals
+FROM all_
+GROUP BY country
+)
+
+
+SELECT d.Country, d.population, m.medals, (d.population / m.medals) AS ratio
+FROM medals_count m JOIN dictionary d 
+ON m.Country = d.Code
+ORDER BY ratio 
+LIMIT 15
+5.WITH score AS (
+SELECT country, CASE
+WHEN medal = "Gold" THEN 100
+WHEN medal = "Silver" THEN 50
+ELSE 30
+END AS score
+FROM summer
+WHERE year = 1992 
+)
+
+
+
+SELECT su.country, COUNT(DISTINCT athlete) * SUM(sc.score) AS final_score 
+FROM summer su JOIN score sc
+ON (su.country = sc.country) 
+WHERE year = 1992
+GROUP BY country
+ORDER BY final_score DESC
