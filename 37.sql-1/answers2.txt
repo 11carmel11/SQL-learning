@@ -1,0 +1,36 @@
+1.SELECT duration FROM movies WHERE title = "Outback"
+2.SELECT title FROM movies WHERE year = 2017 AND director = "Peter Sullivan"
+3.SELECT reviews_from_critics + reviews_from_users AS criticizers FROM movies WHERE imdb_title_id = "tt7336182"
+4.SELECT votes_1 FROM ratings WHERE imdb_title_id IN (SELECT imdb_title_id FROM movies WHERE title = "Joker")
+5.SELECT COUNT(DISTINCT production_company) as comp_num FROM movies
+6.SELECT AVG(duration) as avg_dur FROM movies WHERE year != 2018 AND actors LIKE "%Dharmajan Bolgatty%" OR actors LIKE "%Sugith Varughes%"
+7.SELECT title, genre, worlwide_gross_income_in_USD - budget AS profit FROM movies WHERE production_company = "DreamWorks" ORDER BY profit DESC
+8.[
+    WITH lins_movies AS (SELECT title, year, imdb_title_id FROM movies WHERE actors LIKE "%Lin Shaye%")
+
+    SELECT l.title, l.year, r.age_18_to_30_avg_vote FROM ratings r RIGHT JOIN lins_movies l ON r.imdb_title_id=l.imdb_title_id ]
+9.[
+    WITH avg0_18 AS (SELECT AVG(age_0_to_18_avg_vote) as avg, "0_18" as class FROM ratings),
+     avg18_30 AS (SELECT AVG(age_18_to_30_avg_vote) as avg, "18_30" as class FROM ratings),
+     avg30_45 AS (SELECT AVG(age_30_to_45_avg_vote) as avg, "30_45" as class FROM ratings),
+     avg45plus AS (SELECT AVG(age_45_plus_avg_vote) as avg, "45plus" as class FROM ratings),
+     avgs AS (SELECT * FROM avg0_18 UNION SELECT * FROM avg18_30 UNION SELECT * FROM avg30_45 UNION SELECT * FROM avg45plus )
+
+    SELECT MIN(class) FROM avgs
+]
+10.SELECT genre, avg(duration) as avg_duration FROM movies GROUP BY genre ORDER BY avg_duration DESC LIMIT 3
+11.[
+    WITH english_movies AS (SELECT * FROM movies WHERE language = "english"),
+    full_data AS (SELECT m.title, m.year, r.average_vote FROM english_movies m JOIN ratings r ON r.imdb_title_id=m.imdb_title_id )
+
+   SELECT AVG(average_vote) AS avg_rating, year FROM full_data GROUP BY year 
+]
+12.SELECT m.title, r.females_vote_count as f_raters, r.males_vote_count as m_raters, ABS(r.females_avg_vote - r.males_avg_vote) as diff FROM ratings r JOIN movies m ON r.imdb_title_id=m.imdb_title_id ORDER BY diff DESC LIMIT 10
+13.[
+    WITH english_movies AS (SELECT * FROM movies WHERE language = "english"),
+    e_with_av_dur AS (SELECT director, AVG(duration) as avg_dir_dur FROM english_movies GROUP BY director),
+    semi_full_data AS (SELECT m.title, m.year, m.director, m.production_company, r.average_vote FROM english_movies m JOIN ratings r ON r.imdb_title_id=m.imdb_title_id ),
+    full_data AS (SELECT a.*, b.avg_dir_dur FROM e_with_av_dur b JOIN semi_full_data a ON a.director=b.director)
+
+    SELECT * FROM full_data
+]
