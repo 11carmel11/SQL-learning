@@ -1,0 +1,111 @@
+1.[
+    CREATE SCHEMA institute
+    ;
+
+    CREATE TABLE Coach (
+        id INT,
+        name TEXT NOT NULL,
+        mail TEXT,
+        phone TEXT,
+        from_date DATE,
+        hourly_rate FLOAT,
+        institute TEXT NOT NULL,
+        
+        PRIMARY KEY (id)
+    )
+    ;
+
+    CREATE TABLE Types (
+        type_name VARCHAR(50),
+        description TEXT,
+        
+        PRIMARY KEY (type_name)
+    )
+    ;
+
+    CREATE TABLE Coaches (
+        coach_id INT,
+        type_name VARCHAR(50),
+        
+        PRIMARY KEY (coach_id, type_name),
+        FOREIGN KEY (coach_id) REFERENCES Coach(id),
+        FOREIGN KEY (type_name) REFERENCES Types(type_name)
+    )
+    ;
+
+    CREATE TABLE Clients (
+        c_id INT,
+        name TEXT,
+        address TEXT,
+        phone TEXT,
+        
+        PRIMARY KEY (c_id)
+    )
+    ;
+
+    CREATE TABLE Training_sequence (
+        c_id INT,
+        start_date DATE,
+        coach_id INT,
+        type_name TEXT,
+        hours FLOAT,
+        
+        PRIMARY KEY (c_id, start_date),
+        FOREIGN KEY (c_id) REFERENCES Clients(c_id),
+        FOREIGN KEY (coach_id) REFERENCES Coaches(coach_id)
+    )
+    ;
+]
+2.[
+    [
+        INSERT INTO Coach VALUES
+        (11111111, "coach_1", "coach1@gmail.com", "0501111111", "2011-01-01", 11.11, "one institute"),
+        (22222222, "coach_2", "coach2@gmail.com", "0502222222", "2022-02-02", 22.22, "two institute"),
+        (33333333, "coach_3", "coach3@gmail.com", "0503333333", "2033-03-03", 33.33, "three institute"),
+        (44444444, "coach_4", "coach4@gmail.com", "0504444444", "2044-04-04", 44.44, "four institute")
+    ]
+    ;
+
+    [
+        INSERT INTO Types VALUES
+        ("massage", "full-body massage"),
+        ("breathing", "relaxing through breathings"),
+        ("foot-massage", "thai foot massage"),
+        ("couples therapy", "couples-therapy with professional psychologist")
+    ]
+    ;
+
+    [
+        INSERT INTO Coaches VALUES
+        (11111111, "massage"),
+        (22222222, "breathing"),
+        (33333333, "foot-massage"),
+        (44444444, "couples therapy")
+    ]
+    ;
+
+    [
+        INSERT INTO Clients VALUES
+        (11, "client_1", "street_1", "0581111111"),
+        (22, "client_2", "street_2", "0582222222"),
+        (33, "client_3", "street_3", "0583333333"),
+        (44, "client_4", "street_4", "0584444444")
+    ]
+    ;
+
+    [
+        INSERT INTO Training_sequence VALUES
+        (11, "2021-01-01", 11111111, "massage", 11.5),
+        (22, "2021-02-02", 22222222, "breathing", 12.5),
+        (33, "2021-03-03", 33333333, "foot-massage", 13.5),
+        (44, "2021-04-04", 44444444, "couples therapy", 14.5)
+    ]
+]
+3.[
+    CREATE VIEW AS
+    SELECT cl.name, (co.hourly_rate * ts.hours) AS total_cost 
+    FROM Clients cl JOIN Training_sequence ts
+     ON (cl.c_id = ts.c_id)
+    JOIN Coach co
+     ON (co.id = ts.coach_id) 
+]
