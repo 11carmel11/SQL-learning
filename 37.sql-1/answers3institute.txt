@@ -102,7 +102,6 @@
     ]
 ]
 3.[
-    CREATE VIEW AS
     SELECT cl.name, (co.hourly_rate * ts.hours) AS total_cost 
     FROM Clients cl JOIN Training_sequence ts
      ON (cl.c_id = ts.c_id)
