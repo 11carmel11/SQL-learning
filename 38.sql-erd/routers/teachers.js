@@ -36,4 +36,31 @@ router.post("/new/teacher", (req, res) => {
   res.sendStatus(201);
 });
 
+router.delete("/remove/teacher/:teacherId", (req, res) => {
+  const { teacherId } = req.params;
+  const sql = `DELETE FROM teachers WHERE id = ${Number(teacherId)}`;
+  con.query(sql, (err) => {
+    if (err) throw err;
+  });
+
+  con.query(
+    `SELECT id FROM subjects WHERE teachers_id = ${Number(teacherId)}`,
+    (err, results) => {
+      if (err) throw err;
+
+      for (const subject of results) {
+        const { id } = subject;
+        con.query(
+          `DELETE FROM pupils_has_subjects WHERE subject_id = ${Number(id)}`,
+          (er) => {
+            if (er) throw er;
+          }
+        );
+      }
+    }
+  );
+
+  res.sendStatus(202);
+});
+
 module.exports = router;

@@ -54,7 +54,7 @@
 ### DELETS
 
 - DELETE /remove/pupil/:pupilID
-- DELETE /remove/teacher/:teacher
+- DELETE /remove/teacher/:teacherID
 - Will delete the object at the correct table.
 
 ## Preparation of the work environment:
