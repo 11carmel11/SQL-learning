@@ -10,4 +10,8 @@ router.get("/:classId", (req, res) => {
   });
 });
 
+router.put("/update/class/:classId", (_req, res) => {
+  res.sendStatus(100); // empty func, nothing to update in classes table
+});
+
 module.exports = router;

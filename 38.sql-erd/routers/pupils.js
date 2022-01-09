@@ -41,4 +41,48 @@ router.post("/new/pupil", (req, res) => {
   res.sendStatus(201);
 });
 
+router.put("/update/pupil/:pupilId", (req, res) => {
+  const {
+    body: { name, class: classNum, subjects },
+    params: { pupilId },
+  } = req;
+  if (!!name) {
+    const sql = `UPDATE pupils SET name = ${name} WHERE id = ${pupilId}`;
+    con.query(sql, (err) => {
+      if (err) throw err;
+      res.sendStatus(202);
+    });
+  } else if (!!classNum) {
+    const sql = `UPDATE pupils SET classes_id = ${Number(
+      classNum
+    )} WHERE id = ${pupilId}`;
+    con.query(sql, (err) => {
+      if (err) throw err;
+      res.sendStatus(202);
+    });
+  } else {
+    const sql = `DELETE FROM pupils_has_subjects WHERE pupil_id = ${pupilId}`;
+    con.query(sql, (err) => {
+      if (err) throw err;
+
+      for (const subject of subjects) {
+        con.query(
+          `SELECT * from subjects WHERE subject = ${subject}`,
+          (er, results) => {
+            if (er) throw er;
+            const { id } = results[0];
+            con.query(
+              `INSERT INTO pupils_has_subjects VALUES (${(pupilId, id)})`,
+              (e) => {
+                if (e) throw e;
+              }
+            );
+          }
+        );
+      }
+      res.sendStatus(202);
+    });
+  }
+});
+
 module.exports = router;
