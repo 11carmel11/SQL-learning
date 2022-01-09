@@ -85,4 +85,18 @@ router.put("/update/pupil/:pupilId", (req, res) => {
   }
 });
 
+router.delete("/remove/pupil/:pupilId", (req, res) => {
+  const { pupilId } = req.params;
+
+  const sql = `
+  DELETE FROM pupils WHERE id = ${pupilId};
+  DELETE FROM pupils_has_subjects WHERE pupil_id = ${pupilId}
+  `;
+
+  con.query(sql, (err) => {
+    if (err) throw err;
+    res.sendStatus(202);
+  });
+});
+
 module.exports = router;
