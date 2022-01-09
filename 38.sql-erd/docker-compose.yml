@@ -23,4 +23,4 @@ services:
       - MYSQL_DATABASE=test_db
       - MYSQL_USER=student
       - MYSQL_PASSWORD=secret
-      - MYSQL_ROOT_PASSWORD=test_db
+      - MYSQL_ROOT_PASSWORD=secret
