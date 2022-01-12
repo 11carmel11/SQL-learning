@@ -1,0 +1,22 @@
+{
+  "name": "fso-13",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.ts",
+  "scripts": {
+    "dev": "nodemon app.ts"
+  },
+  "keywords": [],
+  "author": "carmel-cohen",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^11.0.0",
+    "express": "^4.17.2",
+    "nodemon": "^2.0.15",
+    "pg": "^8.7.1",
+    "sequelize": "^6.13.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13"
+  }
+}
