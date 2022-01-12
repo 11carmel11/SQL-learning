@@ -1,18 +1,6 @@
-require("dotenv").config();
-
-import { Sequelize, Model, DataTypes } from "sequelize";
-
-const URL = process.env.DATABASE_URL || "";
-
-const sequelize = new Sequelize(URL, {
-  logging: false,
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
-});
+import { Model, DataTypes } from "sequelize";
+import config from "../config";
+const { sequelize } = config;
 
 class Blogs extends Model {}
 Blogs.init(
@@ -37,6 +25,11 @@ Blogs.init(
     likes: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: "Users", key: "id" },
     },
   },
   {

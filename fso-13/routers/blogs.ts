@@ -1,6 +1,9 @@
 import { Request, Router } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import Blogs from "../model/blogs";
 import { Blog } from "../types";
+import config from "../config";
+const { secret } = config;
 const router = Router(); // /api/blogs router
 
 router.get("/", async (_req: Request<never, Blog[] | []>, res) => {
@@ -9,12 +12,27 @@ router.get("/", async (_req: Request<never, Blog[] | []>, res) => {
 });
 
 router.post("/", async (req: Request<never, Blog | void, Blog>, res) => {
-  try {
-    const dataFromClient: Blog = req.body;
-    const newBlog: Blog = (await Blogs.create(dataFromClient)).toJSON();
-    res.json(newBlog);
-  } catch (error) {
-    res.sendStatus(400);
+  const { authorization }: { authorization?: string } = req.headers;
+  if (authorization) {
+    const token = authorization.split(" ")[1];
+    try {
+      jwt.verify(token, secret);
+      try {
+        const user = jwt.decode(token);
+        const dataFromClient: Blog = {
+          ...req.body,
+          userId: (user as JwtPayload).id,
+        };
+        const newBlog: Blog = (await Blogs.create(dataFromClient)).toJSON();
+        res.json(newBlog);
+      } catch (error) {
+        res.sendStatus(400);
+      }
+    } catch (error) {
+      res.sendStatus(498);
+    }
+  } else {
+    res.sendStatus(401);
   }
 });
 

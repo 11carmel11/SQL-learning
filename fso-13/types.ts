@@ -4,4 +4,11 @@ export interface Blog {
   url: string;
   author: string;
   likes: number;
+  userId?: number | string;
+}
+
+export interface User {
+  id: number;
+  name: string;
+  username: string;
 }
