@@ -1,7 +1,6 @@
 import { Request, Router } from "express";
 import Blogs from "../model/blogs";
 import { Blog } from "../types";
-
 const router = Router(); // /api/blogs router
 
 router.get("/", async (_req: Request<never, Blog[] | []>, res) => {
@@ -10,9 +9,13 @@ router.get("/", async (_req: Request<never, Blog[] | []>, res) => {
 });
 
 router.post("/", async (req: Request<never, Blog | void, Blog>, res) => {
-  const dataFromClient: Blog = req.body;
-  const newBlog: Blog = (await Blogs.create(dataFromClient)).toJSON();
-  res.json(newBlog);
+  try {
+    const dataFromClient: Blog = req.body;
+    const newBlog: Blog = (await Blogs.create(dataFromClient)).toJSON();
+    res.json(newBlog);
+  } catch (error) {
+    res.sendStatus(400);
+  }
 });
 
 router.get(
@@ -34,14 +37,18 @@ router.put(
     req: Request<{ id: string }, Blog | string, { likes: number | string }>,
     res
   ) => {
-    const { id } = req.params;
-    const { likes } = req.body;
-    const blog = await Blogs.findByPk(id);
-    if (blog) {
-      await blog.update({ likes });
-      res.json(blog.toJSON());
-    } else {
-      res.sendStatus(404);
+    try {
+      const { id } = req.params;
+      const { likes } = req.body;
+      const blog = await Blogs.findByPk(id);
+      if (blog) {
+        await blog.update({ likes });
+        res.json(blog.toJSON());
+      } else {
+        res.sendStatus(404);
+      }
+    } catch (error) {
+      res.sendStatus(401);
     }
   }
 );
