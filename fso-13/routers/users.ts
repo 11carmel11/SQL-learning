@@ -4,11 +4,17 @@ import jwt from "jsonwebtoken";
 import Users from "../model/users";
 import { User } from "../types";
 import config from "../config";
+import Blogs from "../model/blogs";
 const { secret } = config;
 const router = Router(); // /api/users router
 
 router.get("/", async (_req: Request<never, User[] | []>, res) => {
-  const users = await Users.findAll();
+  const users = await Users.findAll({
+    include: {
+      model: Blogs,
+      attributes: { exclude: ["userId"] },
+    },
+  });
   res.json(users.map((user) => user.toJSON()));
 });
 

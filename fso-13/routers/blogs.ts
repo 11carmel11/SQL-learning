@@ -3,11 +3,20 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import Blogs from "../model/blogs";
 import { Blog } from "../types";
 import config from "../config";
+import Users from "../model/users";
 const { secret } = config;
 const router = Router(); // /api/blogs router
 
 router.get("/", async (_req: Request<never, Blog[] | []>, res) => {
-  const blogs: Blog[] = (await Blogs.findAll()).map((blog) => blog.toJSON());
+  const blogs: Blog[] = (
+    await Blogs.findAll({
+      attributes: { exclude: ["userId"] },
+      include: {
+        model: Users,
+        attributes: ["name"],
+      },
+    })
+  ).map((blog) => blog.toJSON());
   res.json(blogs);
 });
 
