@@ -1,4 +1,5 @@
 import { Request, Router } from "express";
+import validator from "validator";
 import jwt from "jsonwebtoken";
 import Users from "../model/users";
 import { User } from "../types";
@@ -14,15 +15,22 @@ router.get("/", async (_req: Request<never, User[] | []>, res) => {
 router.post(
   "/",
   async (
-    req: Request<never, { user: User; token: string } | string, User>,
+    req: Request<
+      never,
+      { user: User; token: string } | { error: unknown },
+      Omit<User, "id">
+    >,
     res
   ) => {
     try {
-      const user = (await Users.create(req.body)).toJSON();
+      const { name, username } = req.body;
+      if (!validator.isEmail(username))
+        throw "Validation isEmail on username failed";
+      const user = (await Users.create({ name, username })).toJSON();
       const token = jwt.sign(user, secret);
       res.status(201).json({ user, token });
     } catch (error) {
-      res.sendStatus(400);
+      res.status(400).json({ error });
     }
   }
 );
