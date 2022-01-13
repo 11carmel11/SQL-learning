@@ -32,6 +32,7 @@ router.get(
           model: Users,
           attributes: ["name"],
         },
+        order: [["likes", "DESC"]],
         where,
       })
     ).map((blog) => blog.toJSON());
