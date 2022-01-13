@@ -1,11 +1,13 @@
 import { Request, Router } from "express";
-import { Op } from "sequelize";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { Op } from "sequelize";
 import Blogs from "../model/blogs";
+import Users from "../model/users";
 import { Blog } from "../types";
 import config from "../config";
-import Users from "../model/users";
+
 const { secret } = config;
+
 const router = Router(); // /api/blogs router
 
 router.get(
@@ -14,11 +16,13 @@ router.get(
     req: Request<never, Blog[] | [], unknown, { search?: string }>,
     res
   ) => {
-    const where: { title?: { [k: symbol]: string } } = {};
+    const where: any = {};
 
     const { search } = req.query;
     if (search) {
-      where.title = { [Op.iLike]: `%${search}%` };
+      const opr = { [Op.iLike]: `%${search}%` };
+
+      where["$or"] = [{ title: opr }, { author: opr }];
     }
 
     const blogs: Blog[] = (
