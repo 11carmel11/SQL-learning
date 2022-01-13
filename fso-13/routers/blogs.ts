@@ -5,6 +5,7 @@ import Blogs from "../model/blogs";
 import Users from "../model/users";
 import { Blog } from "../types";
 import config from "../config";
+import ToRead from "../model/toRead";
 
 const { secret } = config;
 
@@ -119,8 +120,53 @@ router.delete("/:id", async (req: Request<{ id: string }, string>, res) => {
         if (blog.userId === user.id) {
           await modeledBlog.destroy();
           res.sendStatus(204);
-        }
-        res.sendStatus(401);
+        } else res.sendStatus(401);
+      } else res.sendStatus(404);
+    } catch (error) {
+      res.sendStatus(498);
+    }
+  } else res.sendStatus(403);
+});
+
+router.put("/add/:id", async (req: Request<{ id: string }, string>, res) => {
+  const { id } = req.params;
+  const { authorization } = req.headers;
+  if (authorization) {
+    const token = authorization.split(" ")[1];
+    try {
+      const decoded = jwt.verify(token, secret);
+      const user = JSON.parse(decoded as string);
+      const modeledBlog = await Blogs.findByPk(id);
+      if (modeledBlog) {
+        const blog: Blog = modeledBlog.toJSON();
+        await ToRead.create({ userId: user.id, blogId: blog.id });
+        res.sendStatus(201);
+      } else res.sendStatus(404);
+    } catch (error) {
+      res.sendStatus(498);
+    }
+  } else res.sendStatus(403);
+});
+
+router.put("/read/:id", async (req: Request<{ id: string }, string>, res) => {
+  const { id } = req.params;
+  const { authorization } = req.headers;
+  if (authorization) {
+    const token = authorization.split(" ")[1];
+    try {
+      const decoded = jwt.verify(token, secret);
+      const user = JSON.parse(decoded as string);
+      const modeledBlog = await Blogs.findByPk(id);
+      if (modeledBlog) {
+        const blog: Blog = modeledBlog.toJSON();
+        const toReadRow = await ToRead.findOne({
+          where: { [Op.and]: [{ userId: user.id }, { blogId: blog.id }] },
+        });
+        if (toReadRow) {
+          await toReadRow.update("read", true);
+          res.sendStatus(204);
+        } else res.sendStatus(404);
+        res.sendStatus(201);
       } else res.sendStatus(404);
     } catch (error) {
       res.sendStatus(498);

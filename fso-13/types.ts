@@ -19,3 +19,9 @@ export interface Authored {
   blogs: string;
   likes: string;
 }
+
+export interface ToRead {
+  id: number;
+  user_id: number;
+  blog_id: number;
+}

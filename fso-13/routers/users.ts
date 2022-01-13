@@ -5,6 +5,7 @@ import Users from "../model/users";
 import { User } from "../types";
 import config from "../config";
 import Blogs from "../model/blogs";
+import ToRead from "../model/toRead";
 const { secret } = config;
 const router = Router(); // /api/users router
 
@@ -73,5 +74,15 @@ router.post(
     } else res.sendStatus(404);
   }
 );
+
+router.get("/list/:userId", async (req: Request<{ userId: string }>, res) => {
+  const { userId } = req.params;
+  const list = await ToRead.findAll({
+    where: { userId },
+    attributes: { exclude: ["user_id", "blog_id"] },
+    include: Blogs,
+  });
+  res.json(list.map((elm) => elm.toJSON()));
+});
 
 export default router;

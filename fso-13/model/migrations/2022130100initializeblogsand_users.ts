@@ -38,6 +38,27 @@ const up = async ({
       },
     },
   });
+  await queryInterface.createTable("to_read", {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: "users", key: "id" },
+    },
+    blog_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: "blogs", key: "id" },
+    },
+    read: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+  });
   await queryInterface.createTable("users", {
     id: {
       type: DataTypes.INTEGER,
@@ -72,6 +93,7 @@ const down = async (queryInterface: {
   dropTable: (a1: string) => Promise<void>;
 }) => {
   await queryInterface.dropTable("blogs");
+  await queryInterface.dropTable("to_read");
   await queryInterface.dropTable("users");
 };
 
