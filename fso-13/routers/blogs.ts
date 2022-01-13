@@ -16,9 +16,9 @@ router.post("/", async (req: Request<never, Blog | void, Blog>, res) => {
   if (authorization) {
     const token = authorization.split(" ")[1];
     try {
-      jwt.verify(token, secret);
+      const decoded = jwt.verify(token, secret);
+      const user = JSON.parse(decoded as string);
       try {
-        const user = JSON.parse(jwt.decode(token) as string);
         const dataFromClient: Blog = {
           ...req.body,
           userId: (user as JwtPayload).id,
@@ -70,5 +70,28 @@ router.put(
     }
   }
 );
+
+router.delete("/:id", async (req: Request<{ id: string }, string>, res) => {
+  const { id } = req.params;
+  const { authorization } = req.headers;
+  if (authorization) {
+    const token = authorization.split(" ")[1];
+    try {
+      const decoded = jwt.verify(token, secret);
+      const user = JSON.parse(decoded as string);
+      const modeledBlog = await Blogs.findByPk(id);
+      if (modeledBlog) {
+        const blog: Blog = modeledBlog.toJSON();
+        if (blog.userId === user.id) {
+          await modeledBlog.destroy();
+          res.sendStatus(204);
+        }
+        res.sendStatus(401);
+      } else res.sendStatus(404);
+    } catch (error) {
+      res.sendStatus(498);
+    }
+  } else res.sendStatus(403);
+});
 
 export default router;
