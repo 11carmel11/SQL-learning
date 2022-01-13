@@ -12,3 +12,9 @@ export interface User {
   name: string;
   username: string;
 }
+
+export interface Authored {
+  author: string;
+  blogs: string;
+  likes: string;
+}
