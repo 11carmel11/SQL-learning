@@ -5,7 +5,7 @@ import config from "./config";
 import usersRouter from "./routers/users";
 import { Authored } from "./types";
 import Blogs from "./model/blogs";
-const { PORT, sequelize } = config;
+const { PORT, sequelize, connectToDatabase } = config;
 
 const app = express();
 
@@ -29,6 +29,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/blogs", blogsRouter);
 app.use("/api/users", usersRouter);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const start = async () => {
+  await connectToDatabase();
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+};
+
+start();
