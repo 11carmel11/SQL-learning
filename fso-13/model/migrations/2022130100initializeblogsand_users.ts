@@ -32,6 +32,10 @@ const up = async ({
     year: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+      validate: {
+        max: new Date().getFullYear(),
+        min: 1991,
+      },
     },
   });
   await queryInterface.createTable("users", {
@@ -44,6 +48,7 @@ const up = async ({
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
+      validate: { isEmail: true },
     },
     name: {
       type: DataTypes.STRING,

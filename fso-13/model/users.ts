@@ -17,6 +17,7 @@ Users.init(
     username: {
       type: DataTypes.TEXT,
       allowNull: false,
+      unique: true,
       validate: { isEmail: true }, // OR is: /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/   // `/^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/` is email validation regex
     },
   },

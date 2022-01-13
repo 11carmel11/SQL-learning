@@ -53,8 +53,12 @@ router.post("/", async (req: Request<never, Blog | void, Blog>, res) => {
           ...req.body,
           userId: (user as JwtPayload).id,
         };
-        const newBlog: Blog = (await Blogs.create(dataFromClient)).toJSON();
-        res.json(newBlog);
+        if (req.body.year < 1991 || req.body.year > new Date().getFullYear()) {
+          res.sendStatus(401);
+        } else {
+          const newBlog: Blog = (await Blogs.create(dataFromClient)).toJSON();
+          res.json(newBlog);
+        }
       } catch (error) {
         res.sendStatus(400);
       }

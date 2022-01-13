@@ -5,6 +5,7 @@ export interface Blog {
   author: string;
   likes: number;
   userId?: number | string;
+  year: number;
 }
 
 export interface User {
