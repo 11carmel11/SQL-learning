@@ -75,14 +75,26 @@ router.post(
   }
 );
 
-router.get("/list/:userId", async (req: Request<{ userId: string }>, res) => {
-  const { userId } = req.params;
-  const list = await ToRead.findAll({
-    where: { userId },
-    attributes: { exclude: ["user_id", "blog_id"] },
-    include: Blogs,
-  });
-  res.json(list.map((elm) => elm.toJSON()));
-});
+router.get(
+  "/list/:userId",
+  async (
+    req: Request<{ userId: string }, {}[], never, { read?: string }>,
+    res
+  ) => {
+    const { userId } = req.params;
+    const { read } = req.query;
+
+    const where: { userId: string; read?: string } = { userId };
+    if (read === "true" || read === "false") {
+      where.read = read;
+    }
+    const list = await ToRead.findAll({
+      where,
+      attributes: { exclude: ["user_id", "blog_id"] },
+      include: Blogs,
+    });
+    res.json(list.map((elm) => elm.toJSON()));
+  }
+);
 
 export default router;
