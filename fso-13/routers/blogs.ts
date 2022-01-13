@@ -18,7 +18,7 @@ router.post("/", async (req: Request<never, Blog | void, Blog>, res) => {
     try {
       jwt.verify(token, secret);
       try {
-        const user = jwt.decode(token);
+        const user = JSON.parse(jwt.decode(token) as string);
         const dataFromClient: Blog = {
           ...req.body,
           userId: (user as JwtPayload).id,

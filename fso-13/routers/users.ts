@@ -15,11 +15,7 @@ router.get("/", async (_req: Request<never, User[] | []>, res) => {
 router.post(
   "/",
   async (
-    req: Request<
-      never,
-      { user: User; token: string } | { error: unknown },
-      Omit<User, "id">
-    >,
+    req: Request<never, User | { error: unknown }, Omit<User, "id">>,
     res
   ) => {
     try {
@@ -27,8 +23,7 @@ router.post(
       if (!validator.isEmail(username))
         throw "Validation isEmail on username failed";
       const user = (await Users.create({ name, username })).toJSON();
-      const token = jwt.sign(user, secret);
-      res.status(201).json({ user, token });
+      res.status(201).json(user);
     } catch (error) {
       res.status(400).json({ error });
     }
@@ -52,6 +47,24 @@ router.put(
     } else {
       res.sendStatus(404);
     }
+  }
+);
+
+router.post(
+  "/login",
+  async (
+    req: Request<never, string, Partial<User> & { password: string }>,
+    res
+  ) => {
+    const { id, name, username, password } = req.body;
+    let user = await Users.findByPk(id);
+    if (user) {
+      user = user.toJSON();
+      if (password === "secret") {
+        const token = jwt.sign(JSON.stringify(user), secret);
+        res.json(token);
+      }
+    } else res.sendStatus(404);
   }
 );
 
