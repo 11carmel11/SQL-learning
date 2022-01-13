@@ -1,4 +1,5 @@
 import { Request, Router } from "express";
+import { Op } from "sequelize";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import Blogs from "../model/blogs";
 import { Blog } from "../types";
@@ -7,18 +8,33 @@ import Users from "../model/users";
 const { secret } = config;
 const router = Router(); // /api/blogs router
 
-router.get("/", async (_req: Request<never, Blog[] | []>, res) => {
-  const blogs: Blog[] = (
-    await Blogs.findAll({
-      attributes: { exclude: ["userId"] },
-      include: {
-        model: Users,
-        attributes: ["name"],
-      },
-    })
-  ).map((blog) => blog.toJSON());
-  res.json(blogs);
-});
+router.get(
+  "/",
+  async (
+    req: Request<never, Blog[] | [], unknown, { search?: string }>,
+    res
+  ) => {
+    const where: { title?: { [k: symbol]: string } } = {};
+
+    const { search } = req.query;
+    if (search) {
+      where.title = { [Op.iLike]: `%${search}%` };
+    }
+
+    const blogs: Blog[] = (
+      await Blogs.findAll({
+        attributes: { exclude: ["userId"] },
+        include: {
+          model: Users,
+          attributes: ["name"],
+        },
+        where,
+      })
+    ).map((blog) => blog.toJSON());
+
+    res.json(blogs);
+  }
+);
 
 router.post("/", async (req: Request<never, Blog | void, Blog>, res) => {
   const { authorization }: { authorization?: string } = req.headers;
